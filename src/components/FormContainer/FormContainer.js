@@ -17,7 +17,10 @@ class FormContainer extends Component {
         password: ""
       },
       region: "Other",
-      about: ""
+      about: "",
+      emailValid: false,
+      passwordValid: false,
+      formValid: false
       // regionOptions: ["Kyiv", "Che", "Others"]
     };
     this.defaultFormValue = this.state;
@@ -60,22 +63,36 @@ class FormContainer extends Component {
   };
 
   validateForm(name, value) {
+    const fieldErrors = this.state.formErrors;
+    let emailValid = this.state.emailValid;
+    let passwordValid = this.state.passwordValid;
+
     switch (name) {
       case "email":
-        this.state.formErrors.email =
-          value.length < 5 ? "Email is less then required" : "";
+        emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+        fieldErrors.email = emailValid ? "OK!" : " is invalid";
         break;
       case "password":
-        this.state.formErrors.password =
-          value.length < 10 ? "pass is less then required" : "";
-        break;
-      case "password":
-        this.state.formErrors.password =
-          value.length === 0 ? console.log("can't be empty") : "";
+        passwordValid = value.length >= 10;
+        fieldErrors.password = passwordValid ? "OK!" : "is less then required";
         break;
       default:
         break;
     }
+    this.setState(
+      {
+        formErrors: fieldErrors,
+        emailValid: emailValid,
+        passwordValid: passwordValid
+      },
+      this.validate
+    );
+  }
+
+  validate() {
+    this.setState({
+      formValid: this.state.emailValid && this.state.passwordValid
+    });
   }
 
   handleConfirmPassword = e => {
@@ -93,13 +110,6 @@ class FormContainer extends Component {
     e.preventDefault();
     console.log(this.state);
 
-    this.state.password.length < 10
-      ? console.log(
-          "Pass is less then required",
-          this.state.password.length < 10
-        )
-      : console.log("Good");
-
     if (this.state.password !== this.state.confirmPassword) {
       this.resetForm();
       alert("Passwords do not match");
@@ -107,6 +117,22 @@ class FormContainer extends Component {
     } else return true;
     // this.resetForm();
   };
+
+  renderErrors() {
+    const { formErrors } = this.state;
+    return Object.keys(formErrors).map((fieldName, index) => {
+      if (formErrors[fieldName].length > 0) {
+        return (
+          <p key={fieldName + index}>
+            {" "}
+            {fieldName} {formErrors[fieldName]}
+          </p>
+        );
+      } else {
+        return " ";
+      }
+    });
+  }
 
   resetForm() {
     this.setState(this.defaultFormValue);
@@ -244,9 +270,14 @@ class FormContainer extends Component {
           </div>
         </div>
         ​
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={!this.state.formValid}
+        >
           Submit
         </button>
+        <div className="panel panel-errors">{this.renderErrors()}</div>
       </form>
     );
   }
