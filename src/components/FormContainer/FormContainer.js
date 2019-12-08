@@ -24,7 +24,9 @@ class FormContainer extends Component {
         password: "",
         confirmPassword: "",
         fileType: "",
-        firstName: ""
+        firstName: "",
+        lastName: "",
+        userName: ""
       },
       region: "Other",
       about: "",
@@ -34,47 +36,6 @@ class FormContainer extends Component {
     };
     this.defaultFormValue = this.state;
   }
-
-  validateUser = e => {
-    const target = e.target;
-    const name = target.name;
-    let value = target.value;
-    const re = /^[0-9a-zA-Z]+$/;
-
-    if (!re.test(value)) {
-      return console.log("wrong symbol!");
-    }
-    this.setState({
-      [name]: value
-    });
-
-    if (target.firstName !== "") {
-      this.setState(
-        {
-          firstNameValid: true
-        },
-        this.validate
-      );
-    }
-
-    if (target.lastName !== "") {
-      this.setState(
-        {
-          lastNameValid: true
-        },
-        this.validate
-      );
-    }
-
-    if (target.userName !== "") {
-      this.setState(
-        {
-          userNameValid: true
-        },
-        this.validate
-      );
-    }
-  };
 
   getImage = e => {
     if (e.target.type === "file") {
@@ -126,6 +87,9 @@ class FormContainer extends Component {
     const fieldErrors = this.state.formErrors;
     let emailValid = this.state.emailValid;
     let passwordValid = this.state.passwordValid;
+    let firstNameValid = this.state.firstNameValid;
+    let lastNameValid = this.state.lastNameValid;
+    let userNameValid = this.state.userNameValid;
 
     switch (name) {
       case "email":
@@ -138,6 +102,24 @@ class FormContainer extends Component {
           ? ""
           : "min 10 symbols length validation";
         break;
+      case "firstName":
+        firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
+        fieldErrors.firstName = firstNameValid
+          ? ""
+          : notify.show("First Name is not correct", "error", 2000);
+        break;
+      case "lastName":
+        lastNameValid = value.match(/^[0-9a-zA-Z]+$/);
+        fieldErrors.lastName = lastNameValid
+          ? ""
+          : notify.show("Last Name is not correct", "error", 2000);
+        break;
+      case "userName":
+        userNameValid = value.match(/^[0-9a-zA-Z]+$/);
+        fieldErrors.userName = userNameValid
+          ? ""
+          : notify.show("User Name is not correct", "error", 2000);
+        break;
       default:
         break;
     }
@@ -145,7 +127,10 @@ class FormContainer extends Component {
       {
         formErrors: fieldErrors,
         emailValid: emailValid,
-        passwordValid: passwordValid
+        passwordValid: passwordValid,
+        firstNameValid: firstNameValid,
+        lastNameValid: lastNameValid,
+        userNameValid: userNameValid
       },
       this.validate
     );
@@ -271,7 +256,7 @@ class FormContainer extends Component {
             value={firstName}
             className="form-control"
             id="inputFirstName"
-            onChange={this.validateUser}
+            onChange={this.handleChange}
           />{" "}
         </div>
         <div className="form-group">
@@ -282,7 +267,7 @@ class FormContainer extends Component {
             value={lastName}
             className="form-control"
             id="inputLastName"
-            onChange={this.validateUser}
+            onChange={this.handleChange}
           />{" "}
         </div>
         <div className="form-group">
@@ -293,7 +278,7 @@ class FormContainer extends Component {
             value={userName}
             className="form-control"
             id="inputUserName"
-            onChange={this.validateUser}
+            onChange={this.handleChange}
           />{" "}
         </div>
         <div>
