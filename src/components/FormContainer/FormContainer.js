@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import Notifications, { notify } from "react-notify-toast";
 
 class FormContainer extends Component {
   constructor(props) {
@@ -17,10 +18,12 @@ class FormContainer extends Component {
       confirmPasswordValid: false,
       sendEmail: true,
       file: null,
+      fileValid: false,
       formErrors: {
         email: "",
         password: "",
         confirmPassword: "",
+        fileType: "",
         firstName: ""
       },
       region: "Other",
@@ -76,6 +79,24 @@ class FormContainer extends Component {
   getImage = e => {
     if (e.target.type === "file") {
       e.target.file = e.target.files[0];
+      // console.log(e.target.file);
+      if (e.target.file !== undefined) {
+        if (
+          e.target.file.type === "image/jpeg" ||
+          e.target.file.type === "image/png"
+        ) {
+          this.setState({
+            fileValid: true
+          });
+          this.state.formErrors.fileType = "";
+        } else {
+          this.state.formErrors.fileType = "only png/jpg";
+        }
+      } else {
+        this.setState({
+          fileValid: false
+        });
+      }
     }
     this.setState(
       {
@@ -103,7 +124,6 @@ class FormContainer extends Component {
 
   validateForm(name, value) {
     const fieldErrors = this.state.formErrors;
-    // let firstNameValid = this.state.firstNameValid;
     let emailValid = this.state.emailValid;
     let passwordValid = this.state.passwordValid;
 
@@ -118,13 +138,6 @@ class FormContainer extends Component {
           ? ""
           : "min 10 symbols length validation";
         break;
-      // case "firstName":
-      //   firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
-      //   this.state.firstName = value.length > 0;
-      //   fieldErrors.firstName = firstNameValid
-      //     ? ""
-      //     : "only numbers and alphabetical symbols";
-      //   break;
       default:
         break;
     }
@@ -133,7 +146,6 @@ class FormContainer extends Component {
         formErrors: fieldErrors,
         emailValid: emailValid,
         passwordValid: passwordValid
-        // firstNameValid: firstNameValid
       },
       this.validate
     );
@@ -147,8 +159,8 @@ class FormContainer extends Component {
         this.state.lastNameValid &&
         this.state.userNameValid &&
         this.state.passwordValid &&
-        this.state.confirmPasswordValid &&
-        this.state.file
+        // this.state.confirmPasswordValid &&
+        this.state.fileValid
     });
   }
 
@@ -180,14 +192,39 @@ class FormContainer extends Component {
 
   submit = e => {
     e.preventDefault();
-    console.log(this.state);
+    // console.log(this.state);
+    const {
+      firstName,
+      lastName,
+      userName,
+      sex,
+      email,
+      password,
+      confirmPassword,
+      confirmPasswordValid,
+      sendEmail,
+      file,
+      region
+    } = this.state;
 
-    // if (this.state.password !== this.state.confirmPassword) {
-    //   this.resetForm();
-    //   alert("Passwords do not match");
-    //   return false;
-    // } else return true;
-    this.resetForm();
+    if (confirmPasswordValid === false) {
+      notify.show("Passwords do not match", "error", 3000);
+    } else {
+      console.log(`
+  FistName: ${firstName}\n
+  LastName: ${lastName}\n
+  UserName: ${userName}\n
+  Sex: ${sex}\n
+  Email: ${email}\n
+  Password: ${password}\n
+  Confirm Password: ${confirmPassword}\n
+  Send Email: ${sendEmail}\n
+  Region: ${region}\n
+  File: ${file.name}, ${file.type}
+  `);
+      notify.show("Form submitted", "success", 5000);
+      this.resetForm();
+    }
   };
 
   renderErrors() {
@@ -197,7 +234,7 @@ class FormContainer extends Component {
         return (
           <p key={fieldName + index} className="errors">
             {" "}
-            {fieldName} {formErrors[fieldName]}
+            {fieldName} {formErrors[fieldName]}{" "}
           </p>
         );
       } else {
@@ -220,11 +257,11 @@ class FormContainer extends Component {
       password,
       confirmPassword,
       sendEmail,
-      file,
       region
     } = this.state;
     return (
       <form noValidate onSubmit={this.submit}>
+        <Notifications />
         <div className="panel panel-errors">{this.renderErrors()}</div>
         <div className="form-group">
           <label htmlFor="inputFirstName">First Name: </label>
@@ -263,7 +300,6 @@ class FormContainer extends Component {
           <label>
             <input
               type="radio"
-              // name="Male"
               value="Male"
               checked={sex === "Male"}
               onChange={this.onRadioChange}
@@ -273,7 +309,6 @@ class FormContainer extends Component {
           <label>
             <input
               type="radio"
-              // name="Female"
               value="Female"
               checked={sex === "Female"}
               onChange={this.onRadioChange}
