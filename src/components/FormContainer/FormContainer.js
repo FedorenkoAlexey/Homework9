@@ -5,16 +5,21 @@ class FormContainer extends Component {
     super(props);
     this.state = {
       firstName: "",
+      firstNameValid: false,
       lastName: "",
       userName: "",
+      sex: "Male",
       email: "",
       password: "",
       confirmPassword: "",
+      confirmPasswordValid: false,
       sendEmail: true,
       file: null,
       formErrors: {
         email: "",
-        password: ""
+        password: "",
+        confirmPassword: "",
+        firstName: ""
       },
       region: "Other",
       about: "",
@@ -64,17 +69,27 @@ class FormContainer extends Component {
 
   validateForm(name, value) {
     const fieldErrors = this.state.formErrors;
+    let firstNameValid = this.state.firstNameValid;
     let emailValid = this.state.emailValid;
     let passwordValid = this.state.passwordValid;
 
     switch (name) {
       case "email":
         emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
-        fieldErrors.email = emailValid ? "OK!" : " is invalid";
+        fieldErrors.email = emailValid ? "" : " is invalid";
         break;
       case "password":
         passwordValid = value.length >= 10;
-        fieldErrors.password = passwordValid ? "OK!" : "is less then required";
+        fieldErrors.password = passwordValid
+          ? ""
+          : "min 10 symbols length validation";
+        break;
+      case "firstName":
+        firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
+        this.state.firstName = value.length > 0;
+        fieldErrors.firstName = firstNameValid
+          ? ""
+          : "only numbers and alphabetical symbols";
         break;
       default:
         break;
@@ -83,7 +98,8 @@ class FormContainer extends Component {
       {
         formErrors: fieldErrors,
         emailValid: emailValid,
-        passwordValid: passwordValid
+        passwordValid: passwordValid,
+        firstNameValid: firstNameValid
       },
       this.validate
     );
@@ -91,19 +107,38 @@ class FormContainer extends Component {
 
   validate() {
     this.setState({
-      formValid: this.state.emailValid && this.state.passwordValid
+      formValid:
+        this.state.emailValid &&
+        this.state.passwordValid &&
+        this.state.firstNameValid &&
+        this.state.confirmPasswordValid
     });
   }
 
   handleConfirmPassword = e => {
     if (e.target.value !== this.state.password) {
-      console.log(".error('error')");
-      this.setState({ confirmPassword: e.target.value });
-      console.log("BED", this.state.confirmPassword);
+      this.setState(
+        {
+          confirmPassword: e.target.value,
+          confirmPasswordValid: false
+        },
+        this.validate
+      );
     } else {
-      this.setState({ confirmPassword: e.target.value });
-      console.log("good", this.state.confirmPassword);
+      this.setState(
+        {
+          confirmPassword: e.target.value,
+          confirmPasswordValid: true
+        },
+        this.validate
+      );
     }
+  };
+
+  onRadioChange = e => {
+    this.setState({
+      sex: e.target.value
+    });
   };
 
   submit = e => {
@@ -143,6 +178,7 @@ class FormContainer extends Component {
       firstName,
       lastName,
       userName,
+      sex,
       email,
       password,
       confirmPassword,
@@ -160,7 +196,7 @@ class FormContainer extends Component {
             value={firstName}
             className="form-control"
             id="inputFirstName"
-            onChange={this.validateUser}
+            onChange={this.handleChange}
           />{" "}
         </div>
         <div className="form-group">
@@ -185,9 +221,31 @@ class FormContainer extends Component {
             onChange={this.validateUser}
           />{" "}
         </div>
+        <div>
+          <label>
+            <input
+              type="radio"
+              // name="Male"
+              value="Male"
+              checked={this.state.sex === "Male"}
+              onChange={this.onRadioChange}
+            />
+            <span> Male </span>
+          </label>
+          <label>
+            <input
+              type="radio"
+              // name="Female"
+              value="Female"
+              checked={this.state.sex === "Female"}
+              onChange={this.onRadioChange}
+            />
+            <span> Female </span>
+          </label>
+        </div>
         ​
         <div className="form-group">
-          <label htmlFor="inputEmail">User Email</label>
+          <label htmlFor="inputEmail">User Email: </label>
           <input
             type="email"
             name="email"
@@ -259,7 +317,6 @@ class FormContainer extends Component {
                 type="file"
                 name="file"
                 className="custom-file-input"
-                id="inputGroupFile04"
                 onChange={this.handleChange}
               />
               ​

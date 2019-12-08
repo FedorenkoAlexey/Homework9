@@ -15,8 +15,17 @@
   border: 2px red;
 }
 form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  width: 70%;
+  width: 50%;
+  min-height: 400px;
+  box-shadow: 5px 5px 10px rgba(0, 1, 6, 0.5), -3px -3px 10px rgba(0, 1, 6, 0.5);
+}
+label {
+  font-size: 16px;
 }
 .btn {
   background-color: rgb(89, 89, 255);
