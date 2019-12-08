@@ -7,7 +7,9 @@ class FormContainer extends Component {
       firstName: "",
       firstNameValid: false,
       lastName: "",
+      lastNameValid: false,
       userName: "",
+      userNameValid: false,
       sex: "Male",
       email: "",
       password: "",
@@ -26,7 +28,6 @@ class FormContainer extends Component {
       emailValid: false,
       passwordValid: false,
       formValid: false
-      // regionOptions: ["Kyiv", "Che", "Others"]
     };
     this.defaultFormValue = this.state;
   }
@@ -38,13 +39,50 @@ class FormContainer extends Component {
     const re = /^[0-9a-zA-Z]+$/;
 
     if (!re.test(value)) {
-      //   this.setState({ value: value });
-      //   console.log({ value });
-      return console.log("weak!");
+      return console.log("wrong symbol!");
     }
     this.setState({
       [name]: value
     });
+
+    if (target.firstName !== "") {
+      this.setState(
+        {
+          firstNameValid: true
+        },
+        this.validate
+      );
+    }
+
+    if (target.lastName !== "") {
+      this.setState(
+        {
+          lastNameValid: true
+        },
+        this.validate
+      );
+    }
+
+    if (target.userName !== "") {
+      this.setState(
+        {
+          userNameValid: true
+        },
+        this.validate
+      );
+    }
+  };
+
+  getImage = e => {
+    if (e.target.type === "file") {
+      e.target.file = e.target.files[0];
+    }
+    this.setState(
+      {
+        file: e.target.file
+      },
+      this.validate
+    );
   };
 
   handleChange = e => {
@@ -56,10 +94,6 @@ class FormContainer extends Component {
       value = target.checked;
     }
 
-    if (target.type === "file") {
-      value = target.files[0];
-    }
-
     this.setState({
       [name]: value
     });
@@ -69,7 +103,7 @@ class FormContainer extends Component {
 
   validateForm(name, value) {
     const fieldErrors = this.state.formErrors;
-    let firstNameValid = this.state.firstNameValid;
+    // let firstNameValid = this.state.firstNameValid;
     let emailValid = this.state.emailValid;
     let passwordValid = this.state.passwordValid;
 
@@ -84,13 +118,13 @@ class FormContainer extends Component {
           ? ""
           : "min 10 symbols length validation";
         break;
-      case "firstName":
-        firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
-        this.state.firstName = value.length > 0;
-        fieldErrors.firstName = firstNameValid
-          ? ""
-          : "only numbers and alphabetical symbols";
-        break;
+      // case "firstName":
+      //   firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
+      //   this.state.firstName = value.length > 0;
+      //   fieldErrors.firstName = firstNameValid
+      //     ? ""
+      //     : "only numbers and alphabetical symbols";
+      //   break;
       default:
         break;
     }
@@ -98,8 +132,8 @@ class FormContainer extends Component {
       {
         formErrors: fieldErrors,
         emailValid: emailValid,
-        passwordValid: passwordValid,
-        firstNameValid: firstNameValid
+        passwordValid: passwordValid
+        // firstNameValid: firstNameValid
       },
       this.validate
     );
@@ -109,9 +143,12 @@ class FormContainer extends Component {
     this.setState({
       formValid:
         this.state.emailValid &&
-        this.state.passwordValid &&
         this.state.firstNameValid &&
-        this.state.confirmPasswordValid
+        this.state.lastNameValid &&
+        this.state.userNameValid &&
+        this.state.passwordValid &&
+        this.state.confirmPasswordValid &&
+        this.state.file
     });
   }
 
@@ -145,12 +182,12 @@ class FormContainer extends Component {
     e.preventDefault();
     console.log(this.state);
 
-    if (this.state.password !== this.state.confirmPassword) {
-      this.resetForm();
-      alert("Passwords do not match");
-      return false;
-    } else return true;
-    // this.resetForm();
+    // if (this.state.password !== this.state.confirmPassword) {
+    //   this.resetForm();
+    //   alert("Passwords do not match");
+    //   return false;
+    // } else return true;
+    this.resetForm();
   };
 
   renderErrors() {
@@ -158,7 +195,7 @@ class FormContainer extends Component {
     return Object.keys(formErrors).map((fieldName, index) => {
       if (formErrors[fieldName].length > 0) {
         return (
-          <p key={fieldName + index}>
+          <p key={fieldName + index} className="errors">
             {" "}
             {fieldName} {formErrors[fieldName]}
           </p>
@@ -188,6 +225,7 @@ class FormContainer extends Component {
     } = this.state;
     return (
       <form noValidate onSubmit={this.submit}>
+        <div className="panel panel-errors">{this.renderErrors()}</div>
         <div className="form-group">
           <label htmlFor="inputFirstName">First Name: </label>
           <input
@@ -196,7 +234,7 @@ class FormContainer extends Component {
             value={firstName}
             className="form-control"
             id="inputFirstName"
-            onChange={this.handleChange}
+            onChange={this.validateUser}
           />{" "}
         </div>
         <div className="form-group">
@@ -227,7 +265,7 @@ class FormContainer extends Component {
               type="radio"
               // name="Male"
               value="Male"
-              checked={this.state.sex === "Male"}
+              checked={sex === "Male"}
               onChange={this.onRadioChange}
             />
             <span> Male </span>
@@ -237,7 +275,7 @@ class FormContainer extends Component {
               type="radio"
               // name="Female"
               value="Female"
-              checked={this.state.sex === "Female"}
+              checked={sex === "Female"}
               onChange={this.onRadioChange}
             />
             <span> Female </span>
@@ -303,9 +341,9 @@ class FormContainer extends Component {
               placeholder="Choose Your Region"
             >
               <option region="Kyiv">Kyiv</option>
-              <option region="Kh">Kharkov</option>
-              <option region="Che">Che</option>
-              <option region="Oth..">Other</option>
+              <option region="Kharkov">Kharkov</option>
+              <option region="Cherkassy">Cherkassy</option>
+              <option region="Other">Other</option>
             </select>
           </label>
         </div>
@@ -317,12 +355,10 @@ class FormContainer extends Component {
                 type="file"
                 name="file"
                 className="custom-file-input"
-                onChange={this.handleChange}
+                accept="image/png, image/jpeg"
+                onChange={this.getImage}
               />
               ​
-              <label className="custom-file-label" htmlFor="inputGroupFile04">
-                ​{file ? file.name : "Choose file"}
-              </label>
             </div>
           </div>
         </div>
@@ -334,7 +370,7 @@ class FormContainer extends Component {
         >
           Submit
         </button>
-        <div className="panel panel-errors">{this.renderErrors()}</div>
+        {/* <div className="panel panel-errors">{this.renderErrors()}</div> */}
       </form>
     );
   }
