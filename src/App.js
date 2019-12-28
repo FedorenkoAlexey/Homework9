@@ -1,14 +1,14 @@
-import React from "react";
-import FormContainer from "./components/FormContainer/FormContainer";
+import React from 'react'
+import FormContainer from './components/FormContainer/FormContainer'
 
-import "./App.css";
+import './App.css'
 
-function App() {
+function App () {
   return (
-    <div className="App">
+    <div className='App'>
       <FormContainer />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
