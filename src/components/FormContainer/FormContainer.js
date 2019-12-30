@@ -29,7 +29,9 @@ class FormContainer extends Component {
         userName: ""
       },
       region: "Other",
-      about: "",
+      errColorConPass: "",
+      errColorPass: "",
+      errColorEmail: "",
       emailValid: false,
       passwordValid: false,
       formValid: false
@@ -95,12 +97,18 @@ class FormContainer extends Component {
       case "email":
         emailValid = value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
         fieldErrors.email = emailValid ? "" : " is invalid";
+        emailValid
+          ? this.setState({ errColorEmail: "" })
+          : this.setState({ errColorEmail: "2px solid red" });
         break;
       case "password":
         passwordValid = value.length >= 10;
         fieldErrors.password = passwordValid
           ? ""
           : "min 10 symbols length validation";
+        passwordValid
+          ? this.setState({ errColorPass: "" })
+          : this.setState({ errColorPass: "2px solid red" });
         break;
       case "confirmPassword":
         confirmPasswordValid = this.state.password === value;
@@ -161,7 +169,8 @@ class FormContainer extends Component {
       this.setState(
         {
           confirmPassword: e.target.value,
-          confirmPasswordValid: false
+          confirmPasswordValid: false,
+          errColorConPass: "2px solid red"
         },
         this.validate
       );
@@ -169,7 +178,8 @@ class FormContainer extends Component {
       this.setState(
         {
           confirmPassword: e.target.value,
-          confirmPasswordValid: true
+          confirmPasswordValid: true,
+          errColorConPass: ""
         },
         this.validate
       );
@@ -241,6 +251,9 @@ class FormContainer extends Component {
   }
 
   render() {
+    const borderColorConPass = { border: this.state.errColorConPass };
+    const borderColorPass = { border: this.state.errColorPass };
+    const borderColorEmail = { border: this.state.errColorEmail };
     const {
       firstName,
       lastName,
@@ -312,6 +325,7 @@ class FormContainer extends Component {
         <div className="form-group">
           <label htmlFor="inputEmail">User Email: </label>
           <input
+            style={borderColorEmail}
             type="email"
             name="email"
             value={email}
@@ -327,6 +341,7 @@ class FormContainer extends Component {
         <div className="form-group">
           <label htmlFor="inputPassword">Password</label>
           <input
+            style={borderColorPass}
             type="password"
             name="password"
             value={password}
@@ -341,6 +356,7 @@ class FormContainer extends Component {
         <div className="form-group">
           <label htmlFor="inputConfirmPassword">Confirm Password</label>
           <input
+            style={borderColorConPass}
             type="password"
             name="confirmPassword"
             value={confirmPassword}
