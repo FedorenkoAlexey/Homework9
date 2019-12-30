@@ -40,7 +40,6 @@ class FormContainer extends Component {
   getImage = e => {
     if (e.target.type === "file") {
       e.target.file = e.target.files[0];
-      // console.log(e.target.file);
       if (e.target.file !== undefined) {
         if (
           e.target.file.type === "image/jpeg" ||
@@ -87,6 +86,7 @@ class FormContainer extends Component {
     const fieldErrors = this.state.formErrors;
     let emailValid = this.state.emailValid;
     let passwordValid = this.state.passwordValid;
+    let confirmPasswordValid = this.state.confirmPasswordValid;
     let firstNameValid = this.state.firstNameValid;
     let lastNameValid = this.state.lastNameValid;
     let userNameValid = this.state.userNameValid;
@@ -101,6 +101,12 @@ class FormContainer extends Component {
         fieldErrors.password = passwordValid
           ? ""
           : "min 10 symbols length validation";
+        break;
+      case "confirmPassword":
+        confirmPasswordValid = this.state.password === value;
+        fieldErrors.confirmPassword = confirmPasswordValid
+          ? ""
+          : "do not match";
         break;
       case "firstName":
         firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
@@ -130,7 +136,8 @@ class FormContainer extends Component {
         passwordValid: passwordValid,
         firstNameValid: firstNameValid,
         lastNameValid: lastNameValid,
-        userNameValid: userNameValid
+        userNameValid: userNameValid,
+        confirmPasswordValid: confirmPasswordValid
       },
       this.validate
     );
@@ -167,6 +174,8 @@ class FormContainer extends Component {
         this.validate
       );
     }
+    this.validateForm(e.target.name, e.target.value);
+    // console.log(this.state.password, e.target.value);
   };
 
   onRadioChange = e => {
@@ -217,9 +226,8 @@ class FormContainer extends Component {
     return Object.keys(formErrors).map((fieldName, index) => {
       if (formErrors[fieldName].length > 0) {
         return (
-          <p key={fieldName + index} className="errors">
-            {" "}
-            {fieldName} {formErrors[fieldName]}{" "}
+          <p key={fieldName + index} className={"errors-" + fieldName}>
+            {fieldName} {formErrors[fieldName]}
           </p>
         );
       } else {
@@ -247,7 +255,6 @@ class FormContainer extends Component {
     return (
       <form noValidate onSubmit={this.submit}>
         <Notifications />
-        <div className="panel panel-errors">{this.renderErrors()}</div>
         <div className="form-group">
           <label htmlFor="inputFirstName">First Name: </label>
           <input
@@ -257,7 +264,7 @@ class FormContainer extends Component {
             className="form-control"
             id="inputFirstName"
             onChange={this.handleChange}
-          />{" "}
+          />
         </div>
         <div className="form-group">
           <label htmlFor="inputLastName">Last Name: </label>
@@ -268,7 +275,7 @@ class FormContainer extends Component {
             className="form-control"
             id="inputLastName"
             onChange={this.handleChange}
-          />{" "}
+          />
         </div>
         <div className="form-group">
           <label htmlFor="inputUserName">User Name: </label>
@@ -279,7 +286,7 @@ class FormContainer extends Component {
             className="form-control"
             id="inputUserName"
             onChange={this.handleChange}
-          />{" "}
+          />
         </div>
         <div>
           <label>
@@ -312,7 +319,10 @@ class FormContainer extends Component {
             id="inputEmail"
             aria-describedby="emailHelp"
             onChange={this.handleChange}
-          />{" "}
+          />
+          <div className="panel-errors-email panel-errors">
+            {this.renderErrors()}
+          </div>
         </div>
         <div className="form-group">
           <label htmlFor="inputPassword">Password</label>
@@ -324,6 +334,9 @@ class FormContainer extends Component {
             id="inputPassword"
             onChange={this.handleChange}
           />
+          <div className="panel-errors-password panel-errors">
+            {this.renderErrors()}
+          </div>
         </div>
         <div className="form-group">
           <label htmlFor="inputConfirmPassword">Confirm Password</label>
@@ -335,6 +348,9 @@ class FormContainer extends Component {
             id="inputConfirmPassword"
             onChange={this.handleConfirmPassword}
           />
+          <div className="panel-errors-confirmPassword panel-errors">
+            {this.renderErrors()}
+          </div>
         </div>
         <div className="form-group form-check">
           <input
@@ -390,7 +406,6 @@ class FormContainer extends Component {
         >
           Submit
         </button>
-        {/* <div className="panel panel-errors">{this.renderErrors()}</div> */}
       </form>
     );
   }

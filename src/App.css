@@ -11,13 +11,41 @@
   border: 2px red;
 }
 
-.errors {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+p {
+  margin: -1px 0;
   font-size: 12px;
   color: #ff6d6d;
+}
+
+.panel-errors {
+  min-height: 15px;
+  max-height: 15px;
+  /* border: 1px solid green; */
+  color: #ff2d2d;
+}
+
+.panel-errors-email .errors-password {
+  display: none;
+}
+
+.panel-errors-email .errors-confirmPassword {
+  display: none;
+}
+
+.panel-errors-password .errors-email {
+  display: none;
+}
+
+.panel-errors-password .errors-confirmPassword {
+  display: none;
+}
+
+.panel-errors-confirmPassword .errors-password {
+  display: none;
+}
+
+.panel-errors-confirmPassword .errors-email {
+  display: none;
 }
 
 form {
@@ -29,7 +57,7 @@ form {
   text-align: center;
   width: 350px;
   /* width: 50%; */
-  height: 700px;
+  height: 650px;
   /* min-height: 400px; */
   box-shadow: 5px 5px 10px rgba(0, 1, 6, 0.5), -3px -3px 10px rgba(0, 1, 6, 0.5);
 }
