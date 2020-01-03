@@ -6,6 +6,7 @@ import Notifications, { notify } from "react-notify-toast";
 
 import "primereact/resources/themes/nova-light/theme.css";
 import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
 
 class FormContainer extends Component {
   constructor(props) {
@@ -95,7 +96,6 @@ class FormContainer extends Component {
 
   onCityChange = e => {
     this.setState({ region: e.target.value }, this.validate);
-    console.log(this.state, e.target.value.name);
     this.state.region === null
       ? this.setState({ regionValid: true })
       : console.log("region added");
@@ -119,12 +119,14 @@ class FormContainer extends Component {
 
   validateForm(name, value) {
     const fieldErrors = this.state.formErrors;
-    let emailValid = this.state.emailValid;
-    let passwordValid = this.state.passwordValid;
-    let confirmPasswordValid = this.state.confirmPasswordValid;
-    let firstNameValid = this.state.firstNameValid;
-    let lastNameValid = this.state.lastNameValid;
-    let userNameValid = this.state.userNameValid;
+    let {
+      emailValid,
+      passwordValid,
+      confirmPasswordValid,
+      firstNameValid,
+      lastNameValid,
+      userNameValid
+    } = this.state;
 
     switch (name) {
       case "email":
@@ -151,21 +153,12 @@ class FormContainer extends Component {
         break;
       case "firstName":
         firstNameValid = value.length >= 1;
-        // fieldErrors.firstName = firstNameValid
-        //   ? ""
-        //   : notify.show("First Name is not correct", "error", 2000);
         break;
       case "lastName":
-        lastNameValid = value.match(/^[0-9a-zA-Z]+$/);
-        fieldErrors.lastName = lastNameValid
-          ? ""
-          : notify.show("Last Name is not correct", "error", 2000);
+        lastNameValid = value.length >= 1;
         break;
       case "userName":
-        userNameValid = value.match(/^[0-9a-zA-Z]+$/);
-        fieldErrors.userName = userNameValid
-          ? ""
-          : notify.show("User Name is not correct", "error", 2000);
+        userNameValid = value.length >= 1;
         break;
       default:
         break;
@@ -229,7 +222,6 @@ class FormContainer extends Component {
 
   submit = e => {
     e.preventDefault();
-    // console.log(this.state);
     const {
       firstName,
       lastName,
@@ -328,7 +320,7 @@ class FormContainer extends Component {
             value={lastName}
             className="form-control"
             id="inputLastName"
-            onChange={this.handleChange}
+            onChange={this.validateUser}
           />
         </div>
         <div className="form-group">
@@ -339,7 +331,7 @@ class FormContainer extends Component {
             value={userName}
             className="form-control"
             id="inputUserName"
-            onChange={this.handleChange}
+            onChange={this.validateUser}
           />
         </div>
         <div>
@@ -359,12 +351,6 @@ class FormContainer extends Component {
               checked={sex === "Female"}
               onChange={this.onRadioChange}
             />
-            {/* <input
-              type="radio"
-              value="Female"
-              checked={sex === "Female"}
-              onChange={this.onRadioChange}
-            /> */}
             <span> Female </span>
           </label>
         </div>
