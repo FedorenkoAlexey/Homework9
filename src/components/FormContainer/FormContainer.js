@@ -1,5 +1,9 @@
 import React, { Component } from "react";
+import { Dropdown } from "primereact/dropdown";
 import Notifications, { notify } from "react-notify-toast";
+
+import "primereact/resources/themes/nova-light/theme.css";
+import "primereact/resources/primereact.min.css";
 
 class FormContainer extends Component {
   constructor(props) {
@@ -19,16 +23,17 @@ class FormContainer extends Component {
       sendEmail: true,
       file: null,
       fileValid: false,
+      fileTypeErr: "",
       formErrors: {
         email: "",
         password: "",
         confirmPassword: "",
-        fileType: "",
         firstName: "",
         lastName: "",
         userName: ""
       },
-      region: "Other",
+      region: null,
+      regionValid: false,
       errColorConPass: "",
       errColorPass: "",
       errColorEmail: "",
@@ -39,6 +44,21 @@ class FormContainer extends Component {
     this.defaultFormValue = this.state;
   }
 
+  validateUser = e => {
+    const target = e.target;
+    const name = target.name;
+    let value = target.value;
+    const re = /^[0-9a-zA-Z]*$/;
+
+    if (!re.test(value)) {
+      return console.log("wrong symbol!");
+    }
+    this.setState({
+      [name]: value
+    });
+    this.validateForm(name, value);
+  };
+
   getImage = e => {
     if (e.target.type === "file") {
       e.target.file = e.target.files[0];
@@ -48,11 +68,14 @@ class FormContainer extends Component {
           e.target.file.type === "image/png"
         ) {
           this.setState({
-            fileValid: true
+            fileValid: true,
+            fileTypeErr: ""
           });
-          this.state.formErrors.fileType = "";
         } else {
-          this.state.formErrors.fileType = "only png/jpg";
+          this.setState({
+            fileValid: false,
+            fileTypeErr: "only png/jpg"
+          });
         }
       } else {
         this.setState({
@@ -66,6 +89,14 @@ class FormContainer extends Component {
       },
       this.validate
     );
+  };
+
+  onCityChange = e => {
+    this.setState({ region: e.target.value }, this.validate);
+    console.log(this.state, e.target.value.name);
+    this.state.region === null
+      ? this.setState({ regionValid: true })
+      : console.log("region added");
   };
 
   handleChange = e => {
@@ -117,10 +148,10 @@ class FormContainer extends Component {
           : "do not match";
         break;
       case "firstName":
-        firstNameValid = value.match(/^[0-9a-zA-Z]+$/);
-        fieldErrors.firstName = firstNameValid
-          ? ""
-          : notify.show("First Name is not correct", "error", 2000);
+        firstNameValid = value.length >= 1;
+        // fieldErrors.firstName = firstNameValid
+        //   ? ""
+        //   : notify.show("First Name is not correct", "error", 2000);
         break;
       case "lastName":
         lastNameValid = value.match(/^[0-9a-zA-Z]+$/);
@@ -160,7 +191,8 @@ class FormContainer extends Component {
         this.state.userNameValid &&
         this.state.passwordValid &&
         // this.state.confirmPasswordValid &&
-        this.state.fileValid
+        this.state.fileValid &&
+        this.state.regionValid
     });
   }
 
@@ -185,7 +217,6 @@ class FormContainer extends Component {
       );
     }
     this.validateForm(e.target.name, e.target.value);
-    // console.log(this.state.password, e.target.value);
   };
 
   onRadioChange = e => {
@@ -223,7 +254,7 @@ class FormContainer extends Component {
   Password: ${password}\n
   Confirm Password: ${confirmPassword}\n
   Send Email: ${sendEmail}\n
-  Region: ${region}\n
+  Region: ${region.name}\n
   File: ${file.name}, ${file.type}
   `);
       notify.show("Form submitted", "success", 5000);
@@ -254,6 +285,14 @@ class FormContainer extends Component {
     const borderColorConPass = { border: this.state.errColorConPass };
     const borderColorPass = { border: this.state.errColorPass };
     const borderColorEmail = { border: this.state.errColorEmail };
+
+    const cities = [
+      { name: "Kyiv" },
+      { name: "Kharkov" },
+      { name: "Cherkassy" },
+      { name: "Other" }
+    ];
+
     const {
       firstName,
       lastName,
@@ -276,7 +315,7 @@ class FormContainer extends Component {
             value={firstName}
             className="form-control"
             id="inputFirstName"
-            onChange={this.handleChange}
+            onChange={this.validateUser}
           />
         </div>
         <div className="form-group">
@@ -376,7 +415,7 @@ class FormContainer extends Component {
             className="form-check-input"
             id="checkbox"
             onChange={this.handleChange}
-          />{" "}
+          />
           ​
           <label className="form-check-label" htmlFor="exampleCheck">
             Send me promotional emails checkbox
@@ -384,19 +423,13 @@ class FormContainer extends Component {
         </div>
         <div className="form-region">
           <label className="form-region" htmlFor="input-region">
-            {" "}
-            Choose your region:
-            <select
-              name="region"
+            <Dropdown
               value={region}
-              onChange={this.handleChange}
-              placeholder="Choose Your Region"
-            >
-              <option region="Kyiv">Kyiv</option>
-              <option region="Kharkov">Kharkov</option>
-              <option region="Cherkassy">Cherkassy</option>
-              <option region="Other">Other</option>
-            </select>
+              options={cities}
+              onChange={this.onCityChange}
+              placeholder="Select a City"
+              optionLabel="name"
+            />
           </label>
         </div>
         ​
@@ -411,6 +444,9 @@ class FormContainer extends Component {
                 onChange={this.getImage}
               />
               ​
+              <div className="file-error panel-errors">
+                {this.state.fileValid ? " " : this.state.fileTypeErr}
+              </div>
             </div>
           </div>
         </div>

@@ -8,7 +8,6 @@
   justify-content: center;
   font-size: calc(12px + 1vmin);
   color: white;
-  border: 2px red;
 }
 
 p {
@@ -17,11 +16,15 @@ p {
   color: #ff6d6d;
 }
 
+.file-error {
+  margin: -1px 0;
+  font-size: 12px;
+}
+
 .panel-errors {
   min-height: 15px;
   max-height: 15px;
-  /* border: 1px solid green; */
-  color: #ff2d2d;
+  color: #ff6d6d;
 }
 
 .panel-errors-email .errors-password {
