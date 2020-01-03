@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 import { Dropdown } from "primereact/dropdown";
+import { Checkbox } from "primereact/checkbox";
+import { RadioButton } from "primereact/radiobutton";
 import Notifications, { notify } from "react-notify-toast";
 
 import "primereact/resources/themes/nova-light/theme.css";
@@ -342,7 +344,7 @@ class FormContainer extends Component {
         </div>
         <div>
           <label>
-            <input
+            <RadioButton
               type="radio"
               value="Male"
               checked={sex === "Male"}
@@ -351,12 +353,18 @@ class FormContainer extends Component {
             <span> Male </span>
           </label>
           <label>
-            <input
+            <RadioButton
               type="radio"
               value="Female"
               checked={sex === "Female"}
               onChange={this.onRadioChange}
             />
+            {/* <input
+              type="radio"
+              value="Female"
+              checked={sex === "Female"}
+              onChange={this.onRadioChange}
+            /> */}
             <span> Female </span>
           </label>
         </div>
@@ -407,8 +415,8 @@ class FormContainer extends Component {
             {this.renderErrors()}
           </div>
         </div>
-        <div className="form-group form-check">
-          <input
+        <div className="form-group form-check p-col-12">
+          <Checkbox
             type="checkbox"
             name="sendEmail"
             checked={sendEmail}
@@ -417,7 +425,7 @@ class FormContainer extends Component {
             onChange={this.handleChange}
           />
           ​
-          <label className="form-check-label" htmlFor="exampleCheck">
+          <label className="p-checkbox-label" htmlFor="exampleCheck">
             Send me promotional emails checkbox
           </label>
         </div>
